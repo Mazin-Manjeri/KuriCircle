@@ -108,7 +108,7 @@ export const MyGroupsPage: React.FC = () => {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-1 rounded-xl bg-white p-1 shadow-sm">
+        <div className="inline-flex max-w-full overflow-x-auto items-center gap-1 rounded-xl bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => setFilterMode('my')}
@@ -204,7 +204,7 @@ export const MyGroupsPage: React.FC = () => {
           </Button>
         </Card>
       ) : (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
           {list.map((group) => {
             const saved = getGroupTotalSaved(group.id);
             const pct = Math.min(
@@ -400,7 +400,7 @@ export const CreateGroupPage: React.FC = () => {
         <span>Back to Savings Groups</span>
       </button>
 
-      <Card className="p-6 sm:p-8">
+      <Card className="p-4 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-1">
             <h2 className="font-display text-xl font-bold text-[#1F1F1F]">
@@ -455,7 +455,7 @@ export const CreateGroupPage: React.FC = () => {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid gap-4 grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5">
               <Label htmlFor="grp-max">Max Members</Label>
               <Input
@@ -552,7 +552,7 @@ export const CreateGroupPage: React.FC = () => {
 
           <div className="space-y-1.5">
             <Label>Group Cover Image</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-3">
               {[
                 { label: 'Community Courtyard', url: DEMO_GROUP_IMAGES.greenfield },
                 { label: 'Education Ledger', url: DEMO_GROUP_IMAGES.education },
@@ -628,7 +628,7 @@ export const CreateGroupPage: React.FC = () => {
             </p>
           )}
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3">
             <Button
               type="button"
               variant="outline"
@@ -768,7 +768,7 @@ export const GroupDetailsPage: React.FC = () => {
       {/* Header Banner Card */}
       <Card className="overflow-hidden">
         <div className="grid lg:grid-cols-12">
-          <div className="lg:col-span-5 h-56 lg:h-auto bg-[#E8F0ED]">
+          <div className="lg:col-span-5 aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[260px] bg-[#E8F0ED]">
             <img
               src={group.imageUrl || DEMO_GROUP_IMAGES.greenfield}
               alt={group.name}
@@ -776,7 +776,7 @@ export const GroupDetailsPage: React.FC = () => {
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="lg:col-span-7 p-6 space-y-4">
+          <div className="lg:col-span-7 p-4 sm:p-6 space-y-4 min-w-0">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold text-[#0E5A46]">
@@ -825,11 +825,11 @@ export const GroupDetailsPage: React.FC = () => {
                 <span>Pending verification: {formatINR(pending)}</span>
                 <span>Target date: {formatDate(group.endDate)}</span>
               </div>
-              <div className="grid grid-cols-4 gap-2 pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                 {[25, 50, 75, 100].map((m) => (
                   <div
                     key={m}
-                    className={`rounded-lg px-2 py-1 text-center text-[11px] font-medium tabular-nums ${
+                    className={`rounded-lg px-2 py-1.5 text-center text-[11px] font-medium tabular-nums ${
                       pct >= m
                         ? 'bg-[#0E5A46] text-white'
                         : 'bg-white text-[#7A7A7A]'
@@ -846,7 +846,7 @@ export const GroupDetailsPage: React.FC = () => {
 
       <div className="grid gap-5 lg:grid-cols-12">
         {/* Members & Requests */}
-        <Card className="lg:col-span-7 p-5 sm:p-6 space-y-5">
+        <Card className="lg:col-span-7 p-4 sm:p-6 space-y-5 min-w-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-[#0E5A46]" />
@@ -972,7 +972,7 @@ export const GroupDetailsPage: React.FC = () => {
         </Card>
 
         {/* Rules, Announcements & Recent Activity */}
-        <div className="lg:col-span-5 space-y-5">
+        <div className="lg:col-span-5 space-y-5 min-w-0">
           <Card className="p-5 space-y-3">
             <div className="flex items-center gap-2">
               <Megaphone className="h-4 w-4 text-[#0E5A46]" />

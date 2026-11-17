@@ -170,15 +170,15 @@ export const ContributionsPage: React.FC = () => {
     <div className="space-y-5">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-1 rounded-xl bg-white p-1 shadow-sm overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <div className="inline-flex max-w-full overflow-x-auto items-center gap-1 rounded-xl bg-white p-1 shadow-sm">
             {(['all', 'pending', 'submitted', 'verified', 'rejected'] as const).map(
               (st) => (
                 <button
                   key={st}
                   type="button"
                   onClick={() => setStatusFilter(st)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize whitespace-nowrap transition-colors cursor-pointer ${
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                     statusFilter === st
                       ? 'bg-[#1F1F1F] text-white'
                       : 'text-[#7A7A7A] hover:text-[#1F1F1F]'
@@ -190,7 +190,7 @@ export const ContributionsPage: React.FC = () => {
             )}
           </div>
 
-          <div className="w-56">
+          <div className="w-full sm:w-56">
             <Select value={groupFilter} onValueChange={setGroupFilter}>
               <SelectTrigger className="h-9 bg-white text-xs">
                 <SelectValue placeholder="All groups" />
@@ -266,7 +266,7 @@ export const ContributionsPage: React.FC = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="c-amt">Amount (₹)</Label>
                   <Input
@@ -346,8 +346,99 @@ export const ContributionsPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <>
+            {/* Mobile Card List (< md) */}
+            <div className="md:hidden divide-y divide-[#F0EDE6]">
+              {filteredRecords.map((c) => {
+                const member = db.profiles.find((p) => p.id === c.memberId);
+                const group = db.groups.find((g) => g.id === c.groupId);
+                const canVerify =
+                  group &&
+                  (group.organizerId === currentUser?.id ||
+                    currentUser?.role === 'platform_admin') &&
+                  (c.paymentStatus === 'pending' ||
+                    c.paymentStatus === 'submitted');
+
+                return (
+                  <div key={c.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate('transaction-details', {
+                              transactionId: c.id,
+                            })
+                          }
+                          className="font-mono text-xs font-semibold text-[#0E5A46] hover:underline cursor-pointer"
+                        >
+                          {c.transactionId}
+                        </button>
+                        <p className="text-sm font-semibold text-[#1F1F1F] truncate">
+                          {member?.fullName ?? c.memberId}
+                        </p>
+                        <p className="text-xs text-[#7A7A7A] truncate">
+                          {group?.name ?? c.groupId}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-[#1F1F1F] tabular-nums">
+                          {formatINR(c.amount)}
+                        </p>
+                        <SemanticStatusText
+                          status={c.paymentStatus}
+                          className="justify-end"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#7A7A7A]">
+                      <span className="tabular-nums">
+                        Period {c.contributionPeriod} · {formatDate(c.transactionDate)}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {canVerify && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                verifyOrRejectContribution(c.id, 'verified')
+                              }
+                              className="rounded-lg bg-[#E8F0ED] px-2.5 py-1.5 text-[11px] font-medium text-[#0E5A46]"
+                            >
+                              Verify
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                verifyOrRejectContribution(c.id, 'rejected')
+                              }
+                              className="rounded-lg bg-[#FEE2E2] px-2.5 py-1.5 text-[11px] font-medium text-[#B91C1C]"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate('transaction-details', {
+                              transactionId: c.id,
+                            })
+                          }
+                          className="rounded-lg bg-[#F8F6F2] px-2.5 py-1.5 text-[11px] font-medium text-[#1F1F1F]"
+                        >
+                          Receipt
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table (>= md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#ECEAE3] bg-[#F8F6F2] text-[11px] font-semibold text-[#7A7A7A]">
                   <th className="py-3.5 px-4">Transaction ID</th>
@@ -462,6 +553,7 @@ export const ContributionsPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </Card>
     </div>
@@ -534,26 +626,26 @@ export const TransactionDetailsPage: React.FC = () => {
         <span>Back to Contributions</span>
       </button>
 
-      <Card className="p-6 sm:p-8 space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#ECEAE3] pb-5">
-          <div className="space-y-1">
+      <Card className="p-4 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-[#ECEAE3] pb-5">
+          <div className="space-y-1 min-w-0">
             <p className="text-xs font-semibold text-[#0E5A46]">
               Simulated Contribution Receipt
             </p>
-            <h2 className="font-display text-2xl font-bold text-[#1F1F1F] font-mono">
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-[#1F1F1F] font-mono break-all">
               {tx.transactionId}
             </h2>
             <p className="text-xs text-[#7A7A7A]">
               Created {formatDateTime(tx.createdAt)}
             </p>
           </div>
-          <div className="text-right">
-            <p className="font-display text-3xl font-bold text-[#0E5A46] tabular-nums">
+          <div className="sm:text-right shrink-0">
+            <p className="font-display text-2xl sm:text-3xl font-bold text-[#0E5A46] tabular-nums">
               {formatINR(tx.amount)}
             </p>
             <SemanticStatusText
               status={tx.verificationStatus}
-              className="mt-1 justify-end"
+              className="mt-1 sm:justify-end"
             />
           </div>
         </div>
@@ -610,12 +702,12 @@ export const TransactionDetailsPage: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          <Button variant="outline" onClick={downloadReceipt} className="gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+          <Button variant="outline" onClick={downloadReceipt} className="gap-2 w-full sm:w-auto">
             <Download className="h-4 w-4" />
             <span>Download Receipt</span>
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-col min-[420px]:flex-row gap-2">
             <Button
               variant="ghost"
               onClick={() => navigate('disputes')}

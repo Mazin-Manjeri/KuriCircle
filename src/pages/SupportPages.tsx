@@ -333,7 +333,18 @@ export const DisputesPage: React.FC = () => {
       </div>
 
       <div className="space-y-4">
-        {visibleDisputes.map((d) => {
+        {visibleDisputes.length === 0 ? (
+          <Card className="p-8 sm:p-10 text-center space-y-2">
+            <MessageSquareWarning className="h-6 w-6 text-[#7A7A7A] mx-auto" />
+            <p className="font-display text-sm font-semibold text-[#1F1F1F]">
+              No disputes reported yet
+            </p>
+            <p className="text-xs text-[#7A7A7A] max-w-md mx-auto">
+              Members and organizers can flag missing or incorrect records here for transparent resolution.
+            </p>
+          </Card>
+        ) : (
+          visibleDisputes.map((d) => {
           const group = db.groups.find((g) => g.id === d.groupId);
           const reporter = db.profiles.find((p) => p.id === d.reportedBy);
           const responses = db.disputeResponses.filter(
@@ -446,7 +457,8 @@ export const DisputesPage: React.FC = () => {
               )}
             </Card>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );
@@ -468,14 +480,14 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-2xl space-y-5">
-      <Card className="p-6 sm:p-8 space-y-6">
-        <div className="flex items-center gap-4">
+      <Card className="p-4 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <UserAvatar name={fullName || currentUser.fullName} src={avatarUrl} size="xl" />
-          <div>
-            <h2 className="font-display text-xl font-bold text-[#1F1F1F]">
+          <div className="min-w-0">
+            <h2 className="font-display text-xl font-bold text-[#1F1F1F] truncate">
               {currentUser.fullName}
             </h2>
-            <p className="text-xs text-[#7A7A7A]">{currentUser.email}</p>
+            <p className="text-xs text-[#7A7A7A] truncate">{currentUser.email}</p>
             <p className="mt-1 text-xs font-semibold text-[#0E5A46] capitalize">
               Role: {currentUser.role.replace('_', ' ')}
             </p>
@@ -584,7 +596,7 @@ export const SettingsPage: React.FC = () => {
           ].map((item) => (
             <div
               key={item.key}
-              className="flex items-center justify-between gap-4 rounded-2xl bg-[#F8F6F2] p-4"
+              className="flex items-center justify-between gap-3 sm:gap-4 rounded-2xl bg-[#F8F6F2] p-4"
             >
               <div>
                 <p className="text-sm font-semibold text-[#1F1F1F]">

@@ -21,9 +21,9 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 lg:py-16">
-      <div className="grid gap-8 lg:grid-cols-12 items-start">
-        <Card className="lg:col-span-6 p-6 sm:p-8">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-12 items-start">
+        <Card className="lg:col-span-6 p-5 sm:p-8 min-w-0">
           <div className="space-y-2 mb-6">
             <p className="text-xs font-semibold text-[#0E5A46]">
               Workspace Access
@@ -111,7 +111,7 @@ export const LoginPage: React.FC = () => {
               key={profile.id}
               className="transition-all hover:shadow-md border border-[#ECEAE3]"
             >
-              <CardContent className="p-5 flex items-center justify-between gap-4">
+              <CardContent className="p-4 sm:p-5 flex flex-col min-[400px]:flex-row min-[400px]:items-center justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <UserAvatar
                     name={profile.fullName}
@@ -166,8 +166,8 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-xl px-6 py-12">
-      <Card className="p-6 sm:p-8">
+    <div className="mx-auto max-w-xl px-4 sm:px-6 py-8 sm:py-12">
+      <Card className="p-5 sm:p-8">
         <div className="space-y-1.5 mb-6">
           <p className="text-xs font-semibold text-[#0E5A46]">
             Account Registration
@@ -229,7 +229,7 @@ export const RegisterPage: React.FC = () => {
 
           <div className="space-y-1.5">
             <Label>Select Role</Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-3">
               {[
                 {
                   id: 'member' as const,
@@ -320,8 +320,8 @@ export const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-md px-6 py-16">
-      <Card className="p-7 space-y-5">
+    <div className="mx-auto max-w-md px-4 sm:px-6 py-10 sm:py-16">
+      <Card className="p-5 sm:p-7 space-y-5">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F0ED] text-[#0E5A46]">
           <KeyRound className="h-5 w-5" />
         </div>

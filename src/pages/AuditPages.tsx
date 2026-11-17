@@ -57,8 +57,66 @@ export const AuditLedgerPage: React.FC = () => {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+        {events.length === 0 ? (
+          <div className="p-8 sm:p-10 text-center space-y-2">
+            <p className="font-display text-base font-semibold text-[#1F1F1F]">
+              No audit events recorded yet
+            </p>
+            <p className="text-xs text-[#7A7A7A] max-w-md mx-auto">
+              Create a savings group or record a simulated contribution to append your first SHA-256 linked audit block.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="md:hidden divide-y divide-[#F2EFE8]">
+              {events.map((ev) => {
+                const actor = db.profiles.find((p) => p.id === ev.actorId);
+                const check = verificationReport?.items.find(
+                  (i) => i.eventId === ev.id
+                );
+                const isBroken = check && !check.isValid;
+                return (
+                  <div
+                    key={ev.id}
+                    className={`p-4 space-y-2 text-xs ${
+                      isBroken ? 'bg-[#FEE2E2]/45' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono font-bold text-[#1F1F1F]">
+                        #{ev.sequenceNumber} · {ev.transactionReference}
+                      </span>
+                      <span className="font-semibold text-[#0E5A46]">
+                        {ev.eventType.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <p className="font-medium text-[#1F1F1F]">{ev.details}</p>
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#7A7A7A]">
+                      <span>Actor: {actor?.fullName ?? ev.actorId}</span>
+                      <span className="font-semibold text-[#1F1F1F] tabular-nums">
+                        {ev.amount !== null ? formatINR(ev.amount) : '—'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 pt-1 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => copyHash(ev.currentEventHash)}
+                        className="inline-flex items-center gap-1.5 font-mono text-[#0E5A46] hover:underline cursor-pointer"
+                      >
+                        <span>{shortHash(ev.currentEventHash)}</span>
+                        <Copy className="h-3 w-3" />
+                      </button>
+                      <span className="text-[#7A7A7A] tabular-nums">
+                        {formatDateTime(ev.timestamp)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-[#ECEAE3] bg-[#F8F6F2] text-[#7A7A7A]">
                 <th className="py-3.5 px-4 font-semibold">Seq #</th>
@@ -129,6 +187,8 @@ export const AuditLedgerPage: React.FC = () => {
             </tbody>
           </table>
         </div>
+          </>
+        )}
       </Card>
     </div>
   );
@@ -169,7 +229,7 @@ export const VerifyHistoryPage: React.FC = () => {
     <div className="space-y-5">
       {/* Status Banner Card */}
       <Card
-        className={`p-6 sm:p-7 ${
+        className={`p-4 sm:p-7 ${
           isIntact
             ? 'bg-gradient-to-br from-[#2B6150] to-[#0E5A46] text-white'
             : 'bg-[#FEF2F2] border border-[#FECACA] text-[#1F1F1F]'
@@ -260,7 +320,7 @@ export const VerifyHistoryPage: React.FC = () => {
       </Card>
 
       {/* Chain Inspector */}
-      <Card className="p-6 space-y-4">
+      <Card className="p-4 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 className="font-display text-base font-semibold text-[#1F1F1F]">
@@ -274,7 +334,12 @@ export const VerifyHistoryPage: React.FC = () => {
         </div>
 
         <div className="space-y-3">
-          {verificationReport?.items.map((item) => {
+          {orderedEvents.length === 0 ? (
+            <p className="rounded-2xl bg-[#F8F6F2] p-6 text-center text-xs text-[#7A7A7A]">
+              No audit blocks recorded yet. Sequential hash verification items will appear here once workspace activity begins.
+            </p>
+          ) : (
+            verificationReport?.items.map((item) => {
             const ev = orderedEvents.find((e) => e.id === item.eventId);
             if (!ev) return null;
             return (
@@ -333,7 +398,8 @@ export const VerifyHistoryPage: React.FC = () => {
                 </div>
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </Card>
     </div>

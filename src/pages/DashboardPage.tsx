@@ -163,7 +163,7 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* Row 1: 4 Clean KPI Cards (Real Live Totals, Zero Fake Sparklines) */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3.5 sm:gap-4 grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-4">
         <Card className="p-5">
           <p className="text-xs font-medium text-[#7A7A7A]">
             Verified Pool Total
@@ -210,14 +210,14 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Row 2: Contribution Flow + Goal Gauge + Identity Card */}
-      <div className="grid gap-5 lg:grid-cols-12">
-        <Card className="lg:col-span-6 p-5 sm:p-6 flex flex-col justify-between">
+      <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+        <Card className="md:col-span-2 lg:col-span-6 p-4 sm:p-6 flex flex-col justify-between min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-display text-lg font-semibold text-[#1F1F1F]">
+            <div className="min-w-0">
+              <h2 className="font-display text-base sm:text-lg font-semibold text-[#1F1F1F]">
                 Contribution Flow
               </h2>
-              <p className="text-xs text-[#7A7A7A]">
+              <p className="text-xs text-[#7A7A7A] truncate">
                 {activeGroup
                   ? activeGroup.name
                   : 'Create or join a savings group to track cycle flow'}
@@ -225,7 +225,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {visibleGroups.length > 0 && (
-              <div className="w-52">
+              <div className="w-full sm:w-52">
                 <Select
                   value={activeGroup?.id ?? ''}
                   onValueChange={setFocusGroupId}
@@ -245,7 +245,7 @@ export const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-1 min-[400px]:grid-cols-2 gap-3">
             <div className="rounded-2xl bg-[#F8F6F2] p-3.5">
               <p className="text-[11px] text-[#7A7A7A]">Verified Progress</p>
               <div className="mt-1 flex items-baseline gap-2">
@@ -346,7 +346,7 @@ export const DashboardPage: React.FC = () => {
         </Card>
 
         {/* Middle 3 Cols: Goal Progress Radial Gauge */}
-        <Card className="lg:col-span-3 p-5 sm:p-6 flex flex-col justify-between">
+        <Card className="md:col-span-1 lg:col-span-3 p-5 sm:p-6 flex flex-col justify-between min-w-0">
           <div>
             <p className="font-display text-base font-semibold text-[#1F1F1F]">
               Savings Goal
@@ -406,7 +406,7 @@ export const DashboardPage: React.FC = () => {
         </Card>
 
         {/* Right 3 Cols: User Identity Card */}
-        <Card className="lg:col-span-3 p-5 sm:p-6 flex flex-col items-center justify-between text-center">
+        <Card className="md:col-span-1 lg:col-span-3 p-5 sm:p-6 flex flex-col items-center justify-between text-center min-w-0">
           <div className="flex flex-col items-center space-y-2.5 pt-1">
             <UserAvatar
               name={currentUser.fullName}
@@ -451,25 +451,25 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Row 3: Active Circle Actions + Recent Contributions + Audit Ledger Status */}
-      <div className="grid gap-5 lg:grid-cols-12">
-        <Card className="lg:col-span-5 p-6 flex flex-col justify-between gap-4">
+      <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+        <Card className="md:col-span-2 lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between gap-4 min-w-0">
           {activeGroup ? (
             <>
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-[#0E5A46]">
                   Active Circle · {activeGroup.purpose}
                 </p>
-                <h2 className="font-display text-xl font-bold text-[#1F1F1F]">
+                <h2 className="font-display text-lg sm:text-xl font-bold text-[#1F1F1F]">
                   {activeGroup.name}
                 </h2>
                 <p className="text-xs leading-relaxed text-[#7A7A7A]">
                   {activeGroup.description}
                 </p>
               </div>
-              <div className="grid grid-cols-3 gap-3 rounded-2xl bg-[#F8F6F2] p-3.5 text-xs tabular-nums">
-                <div>
+              <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-3 rounded-2xl bg-[#F8F6F2] p-3.5 text-xs tabular-nums">
+                <div className="min-w-0">
                   <p className="text-[#7A7A7A]">Invite Code</p>
-                  <p className="font-mono font-semibold text-[#0E5A46] mt-0.5">
+                  <p className="font-mono font-semibold text-[#0E5A46] mt-0.5 truncate">
                     {activeGroup.inviteCode}
                   </p>
                 </div>
@@ -544,7 +544,7 @@ export const DashboardPage: React.FC = () => {
           )}
         </Card>
 
-        <Card className="lg:col-span-4 p-5 flex flex-col justify-between">
+        <Card className="md:col-span-1 lg:col-span-4 p-5 flex flex-col justify-between min-w-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
               Recent Contributions
@@ -600,7 +600,7 @@ export const DashboardPage: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="lg:col-span-3 p-5 flex flex-col justify-between">
+        <Card className="md:col-span-1 lg:col-span-3 p-5 flex flex-col justify-between min-w-0">
           <div className="space-y-2.5">
             <div className="flex items-center gap-2">
               {isAuditHealthy ? (

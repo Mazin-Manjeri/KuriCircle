@@ -52,7 +52,7 @@ export const AdminOverviewPage: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3.5 sm:gap-4 grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-4">
         <Card className="p-5">
           <p className="text-xs text-[#7A7A7A]">Total Platform Users</p>
           <p className="mt-2 font-display text-2xl font-bold text-[#1F1F1F] tabular-nums">
@@ -93,8 +93,8 @@ export const AdminOverviewPage: React.FC = () => {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-12">
-        <Card className="lg:col-span-7 p-6 space-y-4">
-          <div className="flex items-center justify-between">
+        <Card className="lg:col-span-7 p-4 sm:p-6 space-y-4 min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
               Group Simulated Progress vs Target
             </h2>
@@ -106,21 +106,27 @@ export const AdminOverviewPage: React.FC = () => {
               Monitor All Groups
             </Button>
           </div>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={groupChartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ECEAE3" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} tickFormatter={(v) => `₹${v / 1000}k`} />
-                <RechartsTooltip formatter={(v) => formatINR(Number(v ?? 0))} />
-                <Bar dataKey="saved" name="Verified Simulated" fill="#0E5A46" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="target" name="Target Goal" fill="#DCE6E1" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-56 sm:h-64 w-full">
+            {groupChartData.length === 0 ? (
+              <div className="h-full rounded-2xl bg-[#F8F6F2] flex items-center justify-center p-6 text-center text-xs text-[#7A7A7A]">
+                No savings groups created yet. Group progress vs target bars will appear here.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={groupChartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ECEAE3" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} tickFormatter={(v) => `₹${v / 1000}k`} />
+                  <RechartsTooltip formatter={(v) => formatINR(Number(v ?? 0))} />
+                  <Bar dataKey="saved" name="Verified Simulated" fill="#0E5A46" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="target" name="Target Goal" fill="#DCE6E1" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
-        <Card className="lg:col-span-5 p-6 space-y-4">
+        <Card className="lg:col-span-5 p-4 sm:p-6 space-y-4 min-w-0">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
               Quick Admin Queues
@@ -211,7 +217,50 @@ export const AdminUsersPage: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="md:hidden divide-y divide-[#F2EFE8]">
+        {db.profiles.map((u) => (
+          <div key={u.id} className="p-4 space-y-3 text-xs">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <UserAvatar name={u.fullName} src={u.avatarUrl} size="sm" />
+                <div className="min-w-0">
+                  <p className="font-semibold text-[#1F1F1F] truncate">
+                    {u.fullName}
+                  </p>
+                  <p className="text-[11px] text-[#7A7A7A] truncate">{u.email}</p>
+                </div>
+              </div>
+              <SemanticStatusText status={u.isActive ? 'active' : 'suspended'} />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Select
+                value={u.role}
+                onValueChange={(r) => changeUserRole(u.id, r as UserRole)}
+                disabled={u.id === currentUser?.id}
+              >
+                <SelectTrigger className="h-9 w-36 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">Member</SelectItem>
+                  <SelectItem value="organizer">Organizer</SelectItem>
+                  <SelectItem value="platform_admin">Platform Admin</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={u.id === currentUser?.id}
+                onClick={() => toggleUserActive(u.id)}
+              >
+                {u.isActive ? 'Suspend' : 'Activate'}
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-[#ECEAE3] bg-[#F8F6F2] text-[#7A7A7A]">
@@ -281,7 +330,12 @@ export const AdminGroupsPage: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {db.groups.map((g) => {
+      {db.groups.length === 0 ? (
+        <Card className="p-8 text-center text-xs text-[#7A7A7A]">
+          No savings groups have been created yet.
+        </Card>
+      ) : (
+        db.groups.map((g) => {
         const organizer = db.profiles.find((p) => p.id === g.organizerId);
         const saved = getGroupTotalSaved(g.id);
         const membersCount = db.groupMembers.filter(
@@ -337,7 +391,8 @@ export const AdminGroupsPage: React.FC = () => {
             </div>
           </Card>
         );
-      })}
+      })
+      )}
     </div>
   );
 };
@@ -347,7 +402,12 @@ export const AdminDisputesPage: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {db.disputes.map((d) => {
+      {db.disputes.length === 0 ? (
+        <Card className="p-8 text-center text-xs text-[#7A7A7A]">
+          No disputes recorded across the platform.
+        </Card>
+      ) : (
+        db.disputes.map((d) => {
         const group = db.groups.find((g) => g.id === d.groupId);
         const reporter = db.profiles.find((p) => p.id === d.reportedBy);
 
@@ -404,7 +464,8 @@ export const AdminDisputesPage: React.FC = () => {
             )}
           </Card>
         );
-      })}
+      })
+      )}
     </div>
   );
 };
@@ -414,7 +475,7 @@ export const AdminActivityPage: React.FC = () => {
 
   return (
     <div className="grid gap-5 lg:grid-cols-12">
-      <Card className="lg:col-span-5 p-6 space-y-4">
+      <Card className="lg:col-span-5 p-4 sm:p-6 space-y-4 min-w-0">
         <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
           Platform Governance Settings
         </h2>
@@ -456,31 +517,37 @@ export const AdminActivityPage: React.FC = () => {
         </div>
       </Card>
 
-      <Card className="lg:col-span-7 p-6 space-y-4">
+      <Card className="lg:col-span-7 p-4 sm:p-6 space-y-4 min-w-0">
         <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
           Recent System Activity Logs
         </h2>
         <div className="divide-y divide-[#F2EFE8]">
-          {db.activityLogs.map((log) => {
-            const actor = db.profiles.find((p) => p.id === log.userId);
-            return (
-              <div
-                key={log.id}
-                className="py-3 flex items-start justify-between gap-3 text-xs"
-              >
-                <div>
-                  <p className="font-semibold text-[#1F1F1F]">{log.action}</p>
-                  <p className="text-[#555555]">{log.details}</p>
-                  <p className="text-[11px] text-[#7A7A7A]">
-                    {actor?.fullName ?? log.userId} · {log.resourceType}
-                  </p>
+          {db.activityLogs.length === 0 ? (
+            <p className="py-6 text-center text-xs text-[#7A7A7A]">
+              No system activity logged yet.
+            </p>
+          ) : (
+            db.activityLogs.map((log) => {
+              const actor = db.profiles.find((p) => p.id === log.userId);
+              return (
+                <div
+                  key={log.id}
+                  className="py-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 text-xs"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[#1F1F1F]">{log.action}</p>
+                    <p className="text-[#555555]">{log.details}</p>
+                    <p className="text-[11px] text-[#7A7A7A]">
+                      {actor?.fullName ?? log.userId} · {log.resourceType}
+                    </p>
+                  </div>
+                  <span className="text-[11px] text-[#7A7A7A] whitespace-nowrap tabular-nums shrink-0">
+                    {formatDateTime(log.createdAt)}
+                  </span>
                 </div>
-                <span className="text-[11px] text-[#7A7A7A] whitespace-nowrap tabular-nums">
-                  {formatDateTime(log.createdAt)}
-                </span>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </Card>
     </div>

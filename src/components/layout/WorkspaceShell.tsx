@@ -196,15 +196,15 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <TooltipProvider delayDuration={120}>
-      <div className="min-h-screen bg-[#EAE8E2] text-[#1F1F1F] p-2.5 sm:p-4 lg:p-6">
-        <div className="mx-auto max-w-[1440px] rounded-[30px] bg-[#F4F2EC] p-3 sm:p-5 lg:p-6 shadow-[0_6px_30px_rgba(31,31,31,0.04)] flex gap-5 lg:gap-6 min-h-[calc(100vh-3rem)]">
+      <div className="min-h-dvh bg-[#EAE8E2] text-[#1F1F1F] p-2 sm:p-4 lg:p-6">
+        <div className="mx-auto max-w-[1440px] rounded-2xl sm:rounded-[30px] bg-[#F4F2EC] p-3 sm:p-5 lg:p-6 shadow-[0_6px_30px_rgba(31,31,31,0.04)] flex gap-4 lg:gap-6 min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2rem)] lg:min-h-[calc(100dvh-3rem)]">
           {/* Single Primary Navigation: Floating Slim Vertical Icon Rail */}
-          <aside className="hidden lg:flex w-[72px] shrink-0 flex-col items-center justify-between rounded-[28px] bg-white py-5 shadow-[0_2px_14px_rgba(31,31,31,0.035)] sticky top-6 h-[calc(100vh-4.5rem)]">
-            <div className="flex flex-col items-center gap-2">
+          <aside className="hidden lg:flex w-[72px] shrink-0 flex-col items-center justify-between rounded-[28px] bg-white py-4 px-2 shadow-[0_2px_14px_rgba(31,31,31,0.035)] sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto">
+            <div className="flex flex-col items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => navigate('landing')}
-                className="mb-3 p-1.5 rounded-xl hover:bg-[#F3F1EC] transition-colors cursor-pointer"
+                className="mb-2 p-1.5 rounded-xl hover:bg-[#F3F1EC] transition-colors cursor-pointer shrink-0"
                 title="KuriCircle Home"
               >
                 <KuriLogoMark className="h-7 w-7" />
@@ -319,40 +319,40 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
           </aside>
 
           {/* Main Workspace Content Column */}
-          <div className="flex-1 min-w-0 flex flex-col gap-5">
-            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-3.5">
+          <div className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
+            <header className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
                   onClick={() => setMobileNavOpen(true)}
-                  className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-sm"
+                  className="lg:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-sm"
                   aria-label="Open navigation menu"
                 >
                   <Menu className="h-5 w-5" />
                 </button>
-                <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#1F1F1F]">
+                <div className="min-w-0">
+                  <h1 className="font-display text-lg sm:text-2xl font-bold tracking-tight text-[#1F1F1F] truncate">
                     {activeRoute === 'dashboard'
                       ? `Hello, ${firstName}!`
                       : meta.title}
                   </h1>
-                  <p className="text-xs sm:text-sm text-[#7A7A7A]">
+                  <p className="text-xs sm:text-sm text-[#7A7A7A] line-clamp-2 sm:line-clamp-1">
                     {meta.subtitle}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto">
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="relative flex items-center flex-1 sm:flex-initial"
+                  className="relative flex items-center flex-1 min-w-0 sm:flex-initial"
                 >
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search groups, members, or TX ID..."
-                    className="h-11 w-full sm:w-64 rounded-full bg-white pl-4 pr-12 text-xs sm:text-sm text-[#1F1F1F] placeholder:text-[#9A9891] shadow-[0_2px_10px_rgba(31,31,31,0.03)] focus:outline-none focus:ring-2 focus:ring-[#0E5A46]/30"
+                    placeholder="Search groups, members, or TX..."
+                    className="h-11 w-full sm:w-56 md:w-64 rounded-full bg-white pl-4 pr-11 text-xs sm:text-sm text-[#1F1F1F] placeholder:text-[#9A9891] shadow-[0_2px_10px_rgba(31,31,31,0.03)] focus:outline-none focus:ring-2 focus:ring-[#0E5A46]/30"
                   />
                   <button
                     type="submit"
@@ -462,7 +462,7 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
                 </div>
               )}
 
-            <main className="flex-1 pb-4">{children}</main>
+            <main className="flex-1 min-w-0 pb-4">{children}</main>
 
             <footer className="pt-2 text-[11px] text-[#7A7A7A] flex flex-wrap items-center justify-between gap-2">
               <span>

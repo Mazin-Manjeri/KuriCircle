@@ -94,7 +94,7 @@ export const MembersPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-64">
+        <div className="w-full sm:w-64">
           <Select value={activeGroup.id} onValueChange={setSelectedGroupId}>
             <SelectTrigger className="bg-white">
               <SelectValue />
@@ -139,7 +139,7 @@ export const MembersPage: React.FC = () => {
                 <SemanticStatusText status={membership.status} />
               </div>
 
-              <div className="grid grid-cols-3 gap-2 rounded-2xl bg-[#F8F6F2] p-3 text-center tabular-nums">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 rounded-2xl bg-[#F8F6F2] p-2.5 sm:p-3 text-center tabular-nums">
                 <div>
                   <p className="text-[10px] text-[#7A7A7A]">Verified</p>
                   <p className="text-xs font-bold text-[#0E5A46]">

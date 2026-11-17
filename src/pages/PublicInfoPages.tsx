@@ -17,10 +17,10 @@ import { useKuri } from '@/src/lib/store';
 export const AboutPage: React.FC = () => {
   const { navigate, switchDemoUser } = useKuri();
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14 space-y-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14 space-y-8 sm:space-y-10">
       <div className="space-y-4">
         <p className="text-xs font-semibold text-[#0E5A46]">About KuriCircle</p>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[#1F1F1F]">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1F1F1F] [text-wrap:balance]">
           Traditional Trust. Digital Transparency.
         </h1>
         <p className="text-base leading-relaxed text-[#555555]">
@@ -102,10 +102,10 @@ export const FeaturesPage: React.FC = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 space-y-10">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14 space-y-8 sm:space-y-10">
       <div className="max-w-2xl space-y-3">
         <p className="text-xs font-semibold text-[#0E5A46]">Platform Capabilities</p>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[#1F1F1F]">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1F1F1F] [text-wrap:balance]">
           Purpose-built modules for accountable community coordination
         </h1>
       </div>
@@ -169,10 +169,10 @@ export const HowItWorksPage: React.FC = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14 space-y-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14 space-y-8 sm:space-y-10">
       <div className="space-y-3">
         <p className="text-xs font-semibold text-[#0E5A46]">How KuriCircle Works</p>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[#1F1F1F]">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1F1F1F] [text-wrap:balance]">
           Transparent coordination in four structured steps
         </h1>
       </div>
@@ -210,12 +210,12 @@ export const HowItWorksPage: React.FC = () => {
 export const SecurityPage: React.FC = () => {
   const { switchDemoUser } = useKuri();
   return (
-    <div className="mx-auto max-w-5xl px-6 py-14 space-y-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14 space-y-8 sm:space-y-10">
       <div className="space-y-3">
         <p className="text-xs font-semibold text-[#0E5A46]">
           Security & Cryptographic Audit Architecture
         </p>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-[#1F1F1F]">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1F1F1F] [text-wrap:balance]">
           Tamper-evident ledger verification without cryptocurrency hype
         </h1>
         <p className="text-base leading-relaxed text-[#555555]">

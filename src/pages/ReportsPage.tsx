@@ -189,7 +189,7 @@ export const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="w-64">
+        <div className="w-full sm:w-64">
           <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
             <SelectTrigger className="bg-white">
               <SelectValue />
@@ -205,7 +205,7 @@ export const ReportsPage: React.FC = () => {
           </Select>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full lg:w-auto">
           <Button variant="outline" size="sm" onClick={exportTransactionsCSV} className="gap-1.5">
             <Download className="h-3.5 w-3.5" />
             <span>Transactions CSV</span>
@@ -227,7 +227,7 @@ export const ReportsPage: React.FC = () => {
 
       <div className="grid gap-5 lg:grid-cols-12">
         {/* Monthly Collection Report Chart */}
-        <Card className="lg:col-span-7 p-6 space-y-4">
+        <Card className="lg:col-span-7 p-4 sm:p-6 space-y-4 min-w-0">
           <div>
             <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
               Monthly Simulated Collection Report
@@ -236,25 +236,31 @@ export const ReportsPage: React.FC = () => {
               Verified vs pending simulated contributions derived from database records
             </p>
           </div>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlySeries} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ECEAE3" />
-                <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} tickFormatter={(v) => `₹${v / 1000}k`} />
-                <RechartsTooltip
-                  formatter={(v) => formatINR(Number(v ?? 0))}
-                  contentStyle={{ borderRadius: '14px', border: '1px solid #E7E4DC', fontSize: '12px' }}
-                />
-                <Bar dataKey="verified" name="Verified (Simulated)" fill="#0E5A46" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="pending" name="Pending Verification" fill="#C8A45A" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-56 sm:h-64 w-full">
+            {monthlySeries.length === 0 ? (
+              <div className="h-full rounded-2xl bg-[#F8F6F2] flex items-center justify-center p-6 text-center text-xs text-[#7A7A7A]">
+                No contribution cycles recorded yet. Record contributions to populate monthly charts.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlySeries} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ECEAE3" />
+                  <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#7A7A7A', fontSize: 11 }} tickFormatter={(v) => `₹${v / 1000}k`} />
+                  <RechartsTooltip
+                    formatter={(v) => formatINR(Number(v ?? 0))}
+                    contentStyle={{ borderRadius: '14px', border: '1px solid #E7E4DC', fontSize: '12px' }}
+                  />
+                  <Bar dataKey="verified" name="Verified (Simulated)" fill="#0E5A46" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="pending" name="Pending Verification" fill="#C8A45A" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
         {/* Goal Progress & Audit Summary */}
-        <Card className="lg:col-span-5 p-6 space-y-5">
+        <Card className="lg:col-span-5 p-4 sm:p-6 space-y-5 min-w-0">
           <div>
             <h2 className="font-display text-base font-semibold text-[#1F1F1F]">
               Savings Goal Progress Summary
@@ -264,28 +270,34 @@ export const ReportsPage: React.FC = () => {
             </p>
           </div>
           <div className="space-y-4">
-            {visibleGroups.map((g) => {
-              const saved = getGroupTotalSaved(g.id);
-              const pct = Math.min(100, Math.round((saved / g.targetAmount) * 100));
-              return (
-                <div key={g.id} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-[#1F1F1F] truncate pr-2">
-                      {g.name}
-                    </span>
-                    <span className="tabular-nums text-[#0E5A46] font-semibold shrink-0">
-                      {formatINR(saved)} / {formatINR(g.targetAmount)} ({pct}%)
-                    </span>
+            {visibleGroups.length === 0 ? (
+              <p className="text-xs text-[#7A7A7A]">
+                No savings groups created yet.
+              </p>
+            ) : (
+              visibleGroups.map((g) => {
+                const saved = getGroupTotalSaved(g.id);
+                const pct = Math.min(100, Math.round((saved / g.targetAmount) * 100));
+                return (
+                  <div key={g.id} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs gap-2">
+                      <span className="font-semibold text-[#1F1F1F] truncate">
+                        {g.name}
+                      </span>
+                      <span className="tabular-nums text-[#0E5A46] font-semibold shrink-0">
+                        {formatINR(saved)} / {formatINR(g.targetAmount)} ({pct}%)
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-[#ECEAE3] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-[#0E5A46]"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 rounded-full bg-[#ECEAE3] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[#0E5A46]"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
           <div className="rounded-2xl bg-[#F8F6F2] p-4 space-y-1 text-xs">
@@ -335,22 +347,30 @@ export const ReportsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F2EFE8]">
-              {memberReportRows.map((row) => (
-                <tr key={row.name} className="hover:bg-[#F8F6F2]/60">
-                  <td className="py-3 px-4 font-medium text-[#1F1F1F]">
-                    {row.name}
-                  </td>
-                  <td className="py-3 px-4 tabular-nums text-[#7A7A7A]">
-                    {row.count}
-                  </td>
-                  <td className="py-3 px-4 text-right font-semibold text-[#0E5A46] tabular-nums">
-                    {formatINR(row.verified)}
-                  </td>
-                  <td className="py-3 px-4 text-right text-[#9A6B16] tabular-nums">
-                    {formatINR(row.pending)}
+              {memberReportRows.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-8 px-4 text-center text-[#7A7A7A]">
+                    No contributor records yet.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                memberReportRows.map((row) => (
+                  <tr key={row.name} className="hover:bg-[#F8F6F2]/60">
+                    <td className="py-3 px-4 font-medium text-[#1F1F1F] whitespace-nowrap">
+                      {row.name}
+                    </td>
+                    <td className="py-3 px-4 tabular-nums text-[#7A7A7A]">
+                      {row.count}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-[#0E5A46] tabular-nums whitespace-nowrap">
+                      {formatINR(row.verified)}
+                    </td>
+                    <td className="py-3 px-4 text-right text-[#9A6B16] tabular-nums whitespace-nowrap">
+                      {formatINR(row.pending)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
