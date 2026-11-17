@@ -1,0 +1,8 @@
+{
+  "name": "KuriCircle",
+  "description": "Transparent Community Savings & Digital Kuri Management Platform — Demonstration Prototype",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

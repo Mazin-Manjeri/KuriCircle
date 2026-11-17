@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Poppins", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-emerald-deep: #0E5A46;
+  --color-emerald-muted: #0F5B4C;
+  --color-emerald-soft: #E8F0ED;
+  --color-ivory-warm: #F8F6F2;
+  --color-stone-canvas: #EAE8E2;
+  --color-gold-muted: #C8A45A;
+  --color-charcoal: #1F1F1F;
+  --color-warm-gray: #7A7A7A;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Soft fintech surface elevation matching reference bento layout */
+.bento-card {
+  background-color: #FFFFFF;
+  border-radius: 22px;
+  box-shadow: 0 2px 14px rgba(31, 31, 31, 0.035);
+}
+
+.bento-card-soft {
+  background-color: #F8F6F2;
+  border-radius: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
