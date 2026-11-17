@@ -9,27 +9,9 @@ import { useKuri } from '@/src/lib/store';
 
 export const LoginPage: React.FC = () => {
   const { db, login, navigate, switchDemoUser } = useKuri();
-  const [email, setEmail] = useState('ananya.menon@kuricircle.demo');
+  const [email, setEmail] = useState('mohyadden.mazin@kuricircle.demo');
   const [password, setPassword] = useState('demo-pass-2026');
   const [error, setError] = useState<string | null>(null);
-
-  const demoAccounts = [
-    {
-      profile: db.profiles.find((p) => p.id === 'usr-org-01'),
-      label: 'Group Organizer Demo',
-      desc: 'Create groups, approve members, record & verify simulated contributions',
-    },
-    {
-      profile: db.profiles.find((p) => p.id === 'usr-mem-01'),
-      label: 'Community Member Demo',
-      desc: 'Join via invite code, inspect receipts, verify hashes, raise disputes',
-    },
-    {
-      profile: db.profiles.find((p) => p.id === 'usr-adm-01'),
-      label: 'Platform Administrator Demo',
-      desc: 'Monitor all groups, manage users, review escalated disputes & system logs',
-    },
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +26,13 @@ export const LoginPage: React.FC = () => {
         <Card className="lg:col-span-6 p-6 sm:p-8">
           <div className="space-y-2 mb-6">
             <p className="text-xs font-semibold text-[#0E5A46]">
-              Demo Workspace Access
+              Workspace Access
             </p>
             <h1 className="font-display text-2xl font-bold text-[#1F1F1F]">
               Sign in to KuriCircle
             </h1>
             <p className="text-sm text-[#7A7A7A]">
-              Sign in with a demonstration account or choose a role card on the right.
+              Sign in with your registered account or select an active profile.
             </p>
           </div>
 
@@ -62,7 +44,7 @@ export const LoginPage: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@kuricircle.demo"
+                placeholder="mohyadden.mazin@kuricircle.demo"
                 required
               />
             </div>
@@ -100,13 +82,13 @@ export const LoginPage: React.FC = () => {
           </form>
 
           <p className="mt-6 text-center text-xs text-[#7A7A7A]">
-            New to the demonstration?{' '}
+            New user?{' '}
             <button
               type="button"
               onClick={() => navigate('register')}
               className="font-semibold text-[#0E5A46] hover:underline cursor-pointer"
             >
-              Create a demo account
+              Create an account
             </button>
           </p>
         </Card>
@@ -114,50 +96,52 @@ export const LoginPage: React.FC = () => {
         <div className="lg:col-span-6 space-y-4">
           <div className="space-y-1">
             <p className="text-xs font-semibold text-[#0E5A46]">
-              Instant Role Demonstration
+              Quick Workspace Entry
             </p>
             <h2 className="font-display text-lg font-semibold text-[#1F1F1F]">
-              Launch directly with seeded data
+              Registered Accounts ({db.profiles.length})
             </h2>
             <p className="text-xs text-[#7A7A7A]">
-              Explore Greenfield Community Savings (₹40,000 / ₹1,00,000) from any perspective.
+              Enter directly with an existing profile or register additional members.
             </p>
           </div>
 
-          {demoAccounts.map(({ profile, label, desc }) =>
-            profile ? (
-              <Card
-                key={profile.id}
-                className="transition-all hover:shadow-md border border-[#ECEAE3]"
-              >
-                <CardContent className="p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <UserAvatar
-                      name={profile.fullName}
-                      src={profile.avatarUrl}
-                      size="md"
-                    />
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-[#0E5A46]">{label}</p>
-                      <p className="font-display text-sm font-semibold text-[#1F1F1F] truncate">
-                        {profile.fullName}
-                      </p>
-                      <p className="text-xs text-[#7A7A7A] mt-0.5">{desc}</p>
-                    </div>
+          {db.profiles.map((profile) => (
+            <Card
+              key={profile.id}
+              className="transition-all hover:shadow-md border border-[#ECEAE3]"
+            >
+              <CardContent className="p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <UserAvatar
+                    name={profile.fullName}
+                    src={profile.avatarUrl}
+                    size="md"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-[#0E5A46] capitalize">
+                      {profile.role.replace('_', ' ')}
+                    </p>
+                    <p className="font-display text-sm font-semibold text-[#1F1F1F] truncate">
+                      {profile.fullName}
+                    </p>
+                    <p className="text-xs text-[#7A7A7A] truncate">
+                      {profile.email}
+                    </p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => switchDemoUser(profile.id)}
-                    className="shrink-0 gap-1"
-                  >
-                    <span>Enter</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : null
-          )}
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => switchDemoUser(profile.id)}
+                  className="shrink-0 gap-1"
+                >
+                  <span>Enter</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
@@ -169,7 +153,7 @@ export const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [city, setCity] = useState('Kochi, Kerala');
+  const [city, setCity] = useState('Manjeri, Kerala');
   const [role, setRole] = useState<'member' | 'organizer'>('member');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -186,13 +170,13 @@ export const RegisterPage: React.FC = () => {
       <Card className="p-6 sm:p-8">
         <div className="space-y-1.5 mb-6">
           <p className="text-xs font-semibold text-[#0E5A46]">
-            Demo Registration
+            Account Registration
           </p>
           <h1 className="font-display text-2xl font-bold text-[#1F1F1F]">
             Create a KuriCircle Account
           </h1>
           <p className="text-sm text-[#7A7A7A]">
-            Register as a Community Member or Group Organizer to test full workflows.
+            Register as a Community Member or Group Organizer.
           </p>
         </div>
 
@@ -204,7 +188,7 @@ export const RegisterPage: React.FC = () => {
                 id="reg-name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="e.g. Karthik Nair"
+                placeholder="e.g. Mohyadden Mazin"
                 required
               />
             </div>
@@ -228,7 +212,7 @@ export const RegisterPage: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="karthik@example.org"
+                placeholder="mohyadden.mazin@example.com"
                 required
               />
             </div>
@@ -238,7 +222,7 @@ export const RegisterPage: React.FC = () => {
                 id="reg-city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="Kochi, Kerala"
+                placeholder="Manjeri, Kerala"
               />
             </div>
           </div>
@@ -299,8 +283,7 @@ export const RegisterPage: React.FC = () => {
           <div className="flex items-center gap-2 rounded-xl bg-[#F8F6F2] p-3 text-xs text-[#7A7A7A]">
             <ShieldCheck className="h-4 w-4 text-[#0E5A46] shrink-0" />
             <span>
-              By registering, you acknowledge this is a simulated demonstration
-              environment with no real monetary transactions.
+              Demonstration coordination platform with zero real monetary custody.
             </span>
           </div>
 
@@ -347,7 +330,7 @@ export const ResetPasswordPage: React.FC = () => {
             Reset Password
           </h1>
           <p className="text-sm text-[#7A7A7A]">
-            Enter your account email to trigger a simulated recovery flow.
+            Enter your account email to request password recovery.
           </p>
         </div>
 
@@ -359,7 +342,7 @@ export const ResetPasswordPage: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@kuricircle.demo"
+              placeholder="mohyadden.mazin@kuricircle.demo"
               required
             />
           </div>

@@ -21,9 +21,9 @@ import type {
   UserRole,
 } from '@/src/types/kuri';
 
-const STORAGE_KEY = 'kuricircle_demo_db_v1';
-const SESSION_KEY = 'kuricircle_session_user_id_v1';
-const PREFS_KEY = 'kuricircle_notif_prefs_v1';
+const STORAGE_KEY = 'kuricircle_demo_db_v2';
+const SESSION_KEY = 'kuricircle_session_user_id_v2';
+const PREFS_KEY = 'kuricircle_notif_prefs_v2';
 
 interface CreateGroupInput {
   name: string;
@@ -168,7 +168,7 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
   const [db, setDb] = useState<KuriDatabaseState | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeRoute, setActiveRoute] = useState<PageRoute>('landing');
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>('grp-greenfield');
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [verificationReport, setVerificationReport] =
@@ -193,12 +193,26 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
     async function init() {
       let initialDb: KuriDatabaseState | null = null;
       try {
-        const cached = localStorage.getItem(STORAGE_KEY);
-        if (cached) {
-          initialDb = JSON.parse(cached) as KuriDatabaseState;
+        const res = await fetch('/api/state');
+        if (res.ok) {
+          const data = (await res.json()) as { state?: KuriDatabaseState };
+          if (data?.state && Array.isArray(data.state.profiles)) {
+            initialDb = data.state;
+          }
         }
       } catch {
-        initialDb = null;
+        // fallback to localStorage if static host without API
+      }
+
+      if (!initialDb) {
+        try {
+          const cached = localStorage.getItem(STORAGE_KEY);
+          if (cached) {
+            initialDb = JSON.parse(cached) as KuriDatabaseState;
+          }
+        } catch {
+          initialDb = null;
+        }
       }
 
       if (!initialDb || !initialDb.profiles?.length) {
@@ -234,6 +248,13 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch {
         // storage quota fallback
       }
+      fetch('/api/state', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: db }),
+      }).catch(() => {
+        // silent offline/static fallback
+      });
     }
   }, [db, isReady]);
 
@@ -1224,7 +1245,13 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const changeUserRole = (userId: string, role: UserRole) => {
-    if (!db || currentUser?.role !== 'platform_admin') return;
+    if (!db) return;
+    if (
+      currentUser?.role !== 'platform_admin' &&
+      currentUser?.id !== userId
+    ) {
+      return;
+    }
     setDb((prev) =>
       prev
         ? {
@@ -1235,7 +1262,7 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         : prev
     );
-    toast.success('User role updated');
+    toast.success(`Role updated to ${role.replace('_', ' ')}`);
   };
 
   const toggleGroupFlag = (groupId: string, reason?: string) => {
@@ -1294,12 +1321,24 @@ export const KuriProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const resetDemoEnvironment = async () => {
-    const fresh = await buildInitialSeedData();
+    let fresh: KuriDatabaseState | null = null;
+    try {
+      const res = await fetch('/api/reset', { method: 'POST' });
+      if (res.ok) {
+        const data = (await res.json()) as { state?: KuriDatabaseState };
+        if (data?.state) fresh = data.state;
+      }
+    } catch {
+      // static fallback
+    }
+    if (!fresh) {
+      fresh = await buildInitialSeedData();
+    }
     const report = await verifyAuditChain(fresh.auditEvents);
     setDb(fresh);
     setVerificationReport(report);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
-    toast.success('Demonstration dataset reset to clean baseline');
+    toast.success('All data reset to clean zero baseline');
   };
 
   // Authoritative server-style aggregation selectors

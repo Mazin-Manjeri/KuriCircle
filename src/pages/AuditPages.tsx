@@ -162,7 +162,8 @@ export const VerifyHistoryPage: React.FC = () => {
     orderedEvents.find((e) => e.eventType === 'CONTRIBUTION_VERIFIED') ??
     orderedEvents[Math.min(3, orderedEvents.length - 1)];
 
-  const isIntact = verificationReport?.isChainIntact ?? true;
+  const isEmpty = orderedEvents.length === 0;
+  const isIntact = isEmpty || (verificationReport?.isChainIntact ?? true);
 
   return (
     <div className="space-y-5">
@@ -191,7 +192,9 @@ export const VerifyHistoryPage: React.FC = () => {
             </div>
             <div className="space-y-1">
               <h2 className="font-display text-xl font-bold">
-                {isIntact
+                {isEmpty
+                  ? 'Audit Chain Ready — 0 Events Recorded'
+                  : isIntact
                   ? 'Verification Passed — Cryptographic Chain Intact'
                   : 'Tampering Detected — Hash Chain Broken'}
               </h2>
@@ -200,7 +203,9 @@ export const VerifyHistoryPage: React.FC = () => {
                   isIntact ? 'text-white/85' : 'text-[#7F1D1D]'
                 }`}
               >
-                {isIntact
+                {isEmpty
+                  ? 'Create a savings group or record a simulated contribution to generate your first SHA-256 linked audit block.'
+                  : isIntact
                   ? `All ${verificationReport?.validEvents ?? 0} of ${verificationReport?.totalEvents ?? 0} sequential SHA-256 audit digests matched client-side recomputation.`
                   : `${verificationReport?.brokenEvents ?? 1} event(s) failed verification. A stored payload no longer matches its recorded SHA-256 hash.`}
               </p>

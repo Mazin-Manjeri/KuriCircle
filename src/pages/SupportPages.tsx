@@ -608,8 +608,8 @@ export const SettingsPage: React.FC = () => {
           Demonstration Environment Controls
         </h3>
         <p className="text-xs text-[#7A7A7A] leading-relaxed">
-          Restore the seeded Greenfield Community Savings (₹40,000 / ₹1,00,000),
-          members, disputes, and clean SHA-256 audit chain at any time.
+          Reset all groups, contributions, disputes, and audit events back to a
+          clean zero baseline.
         </p>
         <Button
           variant="outline"
@@ -617,7 +617,7 @@ export const SettingsPage: React.FC = () => {
           className="gap-2"
         >
           <RotateCcw className="h-4 w-4" />
-          <span>Reset Demonstration Dataset</span>
+          <span>Reset All Data to Zero</span>
         </Button>
       </Card>
     </div>

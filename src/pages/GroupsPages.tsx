@@ -145,8 +145,7 @@ export const MyGroupsPage: React.FC = () => {
               <DialogHeader>
                 <DialogTitle>Join a Community Savings Circle</DialogTitle>
                 <DialogDescription>
-                  Enter the unique group invitation code shared by your organizer
-                  (for example: KURI-GRN-2026 or KURI-ART-8820).
+                  Enter the unique group invitation code shared by your organizer.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleJoinSubmit} className="space-y-4 pt-2">
@@ -156,7 +155,7 @@ export const MyGroupsPage: React.FC = () => {
                     id="invite-code"
                     value={inviteCodeInput}
                     onChange={(e) => setInviteCodeInput(e.target.value)}
-                    placeholder="KURI-GRN-2026"
+                    placeholder="KURI-XXX-0000"
                     className="font-mono uppercase"
                     required
                   />

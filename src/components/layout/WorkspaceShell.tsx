@@ -19,11 +19,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import {
-  DemoDisclosureBanner,
-  KuriLogoMark,
-  UserAvatar,
-} from '@/src/components/shared/KuriBrand';
+import { KuriLogoMark, UserAvatar } from '@/src/components/shared/KuriBrand';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,13 +31,12 @@ import {
   TooltipTrigger,
 } from '@/src/components/ui/controls';
 import { useKuri } from '@/src/lib/store';
-import type { PageRoute } from '@/src/types/kuri';
+import type { PageRoute, UserRole } from '@/src/types/kuri';
 
 interface NavDef {
   route: PageRoute;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  adminOnly?: boolean;
 }
 
 const MAIN_NAV: NavDef[] = [
@@ -56,97 +51,97 @@ const MAIN_NAV: NavDef[] = [
 ];
 
 const ADMIN_NAV: NavDef[] = [
-  { route: 'admin-overview', label: 'Platform Overview', icon: Shield, adminOnly: true },
-  { route: 'admin-users', label: 'User Management', icon: Users, adminOnly: true },
-  { route: 'admin-groups', label: 'Group Monitoring', icon: FolderKanban, adminOnly: true },
-  { route: 'admin-disputes', label: 'Dispute Monitoring', icon: AlertCircle, adminOnly: true },
-  { route: 'admin-activity', label: 'System Activity', icon: FileCheck2, adminOnly: true },
+  { route: 'admin-overview', label: 'Platform Overview', icon: Shield },
+  { route: 'admin-users', label: 'User Management', icon: Users },
+  { route: 'admin-groups', label: 'Group Monitoring', icon: FolderKanban },
+  { route: 'admin-disputes', label: 'Dispute Monitoring', icon: AlertCircle },
+  { route: 'admin-activity', label: 'System Activity', icon: FileCheck2 },
 ];
 
 const PAGE_TITLES: Record<PageRoute, { title: string; subtitle: string }> = {
   landing: { title: 'KuriCircle', subtitle: 'Traditional Trust. Digital Transparency.' },
   about: { title: 'About KuriCircle', subtitle: 'Community savings heritage modernized' },
   features: { title: 'Platform Features', subtitle: 'Built for accountability' },
-  'how-it-works': { title: 'How It Works', subtitle: 'Three steps to transparent records' },
+  'how-it-works': { title: 'How It Works', subtitle: 'Transparent digital recordkeeping' },
   security: { title: 'Security & Ledger', subtitle: 'SHA-256 verification architecture' },
   login: { title: 'Sign In', subtitle: 'Access your savings circles' },
   register: { title: 'Create Account', subtitle: 'Join KuriCircle' },
   'reset-password': { title: 'Reset Password', subtitle: 'Account recovery' },
   dashboard: {
     title: 'Overview',
-    subtitle: 'Explore simulated savings activity and ledger health across your circles',
+    subtitle: 'Track live savings circles, verified contributions, and ledger integrity',
   },
   groups: {
-    title: 'My Savings Groups',
-    subtitle: 'Coordinate goal-based community savings pools and invite codes',
+    title: 'Savings Groups',
+    subtitle: 'Create goal-based community pools or join with an invitation code',
   },
   'group-details': {
     title: 'Group Workspace',
-    subtitle: 'Inspect savings milestones, rules, announcements, and member ledger',
+    subtitle: 'Milestones, rules, announcements, and member ledger',
   },
   'create-group': {
     title: 'Create Savings Group',
-    subtitle: 'Configure a goal-based demonstration pool with clear community rules',
+    subtitle: 'Configure a goal-based pool with transparent rules',
   },
   members: {
     title: 'Member Directory',
-    subtitle: 'Manage active members, join requests, and contribution standings',
+    subtitle: 'Active members, join requests, and contribution standings',
   },
   contributions: {
-    title: 'Simulated Contributions',
-    subtitle: 'Record, verify, and inspect monthly community contribution entries',
+    title: 'Contributions',
+    subtitle: 'Record, verify, and inspect contribution entries',
   },
   'transaction-details': {
     title: 'Transaction Receipt',
-    subtitle: 'Full simulated transaction metadata and SHA-256 ledger anchor',
+    subtitle: 'Transaction metadata and SHA-256 ledger anchor',
   },
   reports: {
-    title: 'Financial Reports & Analytics',
-    subtitle: 'Interactive charts and CSV exports derived from ledger records',
+    title: 'Financial Reports',
+    subtitle: 'Charts and CSV exports derived from live ledger records',
   },
   'audit-ledger': {
-    title: 'Tamper-Evident Audit Ledger',
-    subtitle: 'Append-only sequence of cryptographically linked community events',
+    title: 'Audit Ledger',
+    subtitle: 'Append-only sequence of SHA-256 linked events',
   },
   'verify-history': {
-    title: 'Verify Transaction History',
-    subtitle: 'Recompute SHA-256 hashes client-side to confirm record integrity',
+    title: 'Verify History',
+    subtitle: 'Recompute SHA-256 hashes client-side to verify integrity',
   },
   notifications: {
     title: 'Notifications',
     subtitle: 'Cycle reminders, approvals, verifications, and dispute updates',
   },
   disputes: {
-    title: 'Dispute Resolution Center',
-    subtitle: 'Report discrepancies and review organizer or administrator responses',
+    title: 'Dispute Center',
+    subtitle: 'Report discrepancies and track resolution responses',
   },
   profile: {
     title: 'User Profile',
-    subtitle: 'Manage your identity details and role membership overview',
+    subtitle: 'Manage your identity details and role',
   },
   settings: {
-    title: 'Workspace Settings',
-    subtitle: 'Configure notification preferences and demonstration environment controls',
+    title: 'Settings',
+    subtitle: 'Configure notification preferences and workspace controls',
   },
   'admin-overview': {
-    title: 'Platform Admin Overview',
-    subtitle: 'Monitor platform-wide demonstration groups, disputes, and ledger integrity',
+    title: 'Platform Overview',
+    subtitle: 'Monitor groups, disputes, and ledger integrity',
   },
   'admin-users': {
     title: 'User Management',
-    subtitle: 'Review user accounts, roles, and access status',
+    subtitle: 'Manage user accounts, roles, and access status',
   },
   'admin-groups': {
     title: 'Group Monitoring',
-    subtitle: 'Inspect active demonstration pools and compliance flags',
+    subtitle: 'Inspect active groups and review flags',
   },
   'admin-disputes': {
-    title: 'Escalated Dispute Queue',
-    subtitle: 'Review and adjudicate disputes escalated by group organizers',
+    title: 'Escalated Disputes',
+    subtitle: 'Review and resolve escalated discrepancy reports',
   },
   'admin-activity': {
-    title: 'System Activity & Settings',
-    subtitle: 'Inspect audit logs and configure platform demonstration policies',
+    title: 'System Activity',
+    subtitle: 'Audit logs and platform policies',
   },
 };
 
@@ -160,7 +155,7 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
     navigate,
     searchQuery,
     setSearchQuery,
-    switchDemoUser,
+    changeUserRole,
     logout,
     verificationReport,
   } = useKuri();
@@ -172,15 +167,6 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
   const unreadNotifs = db.notifications.filter(
     (n) => n.userId === currentUser.id && !n.isRead
   ).length;
-  const openDisputesCount = db.disputes.filter(
-    (d) => d.status === 'open' || d.status === 'escalated'
-  ).length;
-
-  const demoAccounts = [
-    db.profiles.find((p) => p.id === 'usr-org-01'),
-    db.profiles.find((p) => p.id === 'usr-mem-01'),
-    db.profiles.find((p) => p.id === 'usr-adm-01'),
-  ].filter(Boolean);
 
   const navItems =
     currentUser.role === 'platform_admin'
@@ -202,18 +188,24 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const handleRoleSwitch = (role: UserRole) => {
+    changeUserRole(currentUser.id, role);
+    if (role === 'platform_admin') navigate('admin-overview');
+    else navigate('dashboard');
+  };
+
   return (
     <TooltipProvider delayDuration={120}>
       <div className="min-h-screen bg-[#EAE8E2] text-[#1F1F1F] p-2.5 sm:p-4 lg:p-6">
         <div className="mx-auto max-w-[1440px] rounded-[30px] bg-[#F4F2EC] p-3 sm:p-5 lg:p-6 shadow-[0_6px_30px_rgba(31,31,31,0.04)] flex gap-5 lg:gap-6 min-h-[calc(100vh-3rem)]">
-          {/* Desktop Floating Slim Vertical Icon Rail (Reference Layout) */}
+          {/* Single Primary Navigation: Floating Slim Vertical Icon Rail */}
           <aside className="hidden lg:flex w-[72px] shrink-0 flex-col items-center justify-between rounded-[28px] bg-white py-5 shadow-[0_2px_14px_rgba(31,31,31,0.035)] sticky top-6 h-[calc(100vh-4.5rem)]">
             <div className="flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={() => navigate('landing')}
                 className="mb-3 p-1.5 rounded-xl hover:bg-[#F3F1EC] transition-colors cursor-pointer"
-                title="KuriCircle Public Home"
+                title="KuriCircle Home"
               >
                 <KuriLogoMark className="h-7 w-7" />
               </button>
@@ -328,35 +320,28 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
 
           {/* Main Workspace Content Column */}
           <div className="flex-1 min-w-0 flex flex-col gap-5">
-            {/* Workspace Top Header (Modeled after attached reference layout) */}
             <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5">
-                  <button
-                    type="button"
-                    onClick={() => setMobileNavOpen(true)}
-                    className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-sm"
-                    aria-label="Open navigation menu"
-                  >
-                    <Menu className="h-5 w-5" />
-                  </button>
-                  <div className="lg:hidden">
-                    <KuriLogoMark className="h-7 w-7" />
-                  </div>
-                  <div>
-                    <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#1F1F1F]">
-                      {activeRoute === 'dashboard'
-                        ? `Hello, ${firstName}!`
-                        : meta.title}
-                    </h1>
-                    <p className="text-xs sm:text-sm text-[#7A7A7A]">
-                      {meta.subtitle}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3.5">
+                <button
+                  type="button"
+                  onClick={() => setMobileNavOpen(true)}
+                  className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-sm"
+                  aria-label="Open navigation menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#1F1F1F]">
+                    {activeRoute === 'dashboard'
+                      ? `Hello, ${firstName}!`
+                      : meta.title}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-[#7A7A7A]">
+                    {meta.subtitle}
+                  </p>
                 </div>
               </div>
 
-              {/* Right Controls: Pill Search + Circular Icon Buttons + Role Switcher */}
               <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                 <form
                   onSubmit={handleSearchSubmit}
@@ -382,25 +367,6 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
                   <TooltipTrigger asChild>
                     <button
                       type="button"
-                      onClick={() => navigate('disputes')}
-                      aria-label="Disputes"
-                      className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-[0_2px_10px_rgba(31,31,31,0.03)] hover:bg-[#F8F6F2] transition-colors cursor-pointer"
-                    >
-                      <MessageSquareWarning className="h-[18px] w-[18px]" />
-                      {openDisputesCount > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C8A45A] px-1 text-[10px] font-bold text-[#1F1F1F] tabular-nums">
-                          {openDisputesCount}
-                        </span>
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>Dispute Center</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
                       onClick={() => navigate('notifications')}
                       aria-label="Notifications"
                       className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#1F1F1F] shadow-[0_2px_10px_rgba(31,31,31,0.03)] hover:bg-[#F8F6F2] transition-colors cursor-pointer"
@@ -416,7 +382,6 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
                   <TooltipContent>Notifications ({unreadNotifs} unread)</TooltipContent>
                 </Tooltip>
 
-                {/* Role / Demo Account Switcher */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
@@ -438,39 +403,28 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
                       </div>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuContent align="end" className="w-56">
                     <div className="px-3 py-2 border-b border-[#ECEAE3]">
                       <p className="text-xs font-semibold text-[#1F1F1F]">
-                        Switch Demo Role
-                      </p>
-                      <p className="text-[11px] text-[#7A7A7A]">
-                        Test RBAC permissions instantly
+                        Role Perspective
                       </p>
                     </div>
-                    {demoAccounts.map((acc) =>
-                      acc ? (
+                    {(['organizer', 'member', 'platform_admin'] as UserRole[]).map(
+                      (role) => (
                         <DropdownMenuItem
-                          key={acc.id}
-                          onClick={() => switchDemoUser(acc.id)}
+                          key={role}
+                          onClick={() => handleRoleSwitch(role)}
                           className={
-                            acc.id === currentUser.id ? 'bg-[#E8F0ED]/70 font-medium' : ''
+                            currentUser.role === role
+                              ? 'bg-[#E8F0ED]/70 font-medium'
+                              : ''
                           }
                         >
-                          <UserAvatar
-                            name={acc.fullName}
-                            src={acc.avatarUrl}
-                            size="sm"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-[#1F1F1F] truncate">
-                              {acc.fullName}
-                            </p>
-                            <p className="text-[11px] text-[#7A7A7A] capitalize">
-                              {acc.role.replace('_', ' ')}
-                            </p>
-                          </div>
+                          <span className="capitalize">
+                            {role.replace('_', ' ')}
+                          </span>
                         </DropdownMenuItem>
-                      ) : null
+                      )
                     )}
                     <div className="my-1 border-t border-[#ECEAE3]" />
                     <DropdownMenuItem onClick={() => navigate('profile')}>
@@ -493,46 +447,30 @@ export const WorkspaceShell: React.FC<{ children: React.ReactNode }> = ({
               </div>
             </header>
 
-            {/* Quick Sub-Navigation Strip for fast 1-click access to all core modules */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-                {navItems.map((item) => {
-                  const isActive = activeRoute === item.route;
-                  return (
-                    <button
-                      key={item.route}
-                      type="button"
-                      onClick={() => navigate(item.route)}
-                      className={`whitespace-nowrap shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
-                        isActive
-                          ? 'bg-[#0E5A46] text-white'
-                          : 'bg-white/75 text-[#555555] hover:bg-white hover:text-[#1F1F1F]'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {verificationReport && !verificationReport.isChainIntact && (
-                <button
-                  type="button"
-                  onClick={() => navigate('verify-history')}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#FEE2E2] px-3 py-1.5 text-xs font-semibold text-[#B91C1C] cursor-pointer"
-                >
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  <span>Audit Hash Mismatch Detected — Inspect</span>
-                </button>
+            {verificationReport &&
+              verificationReport.totalEvents > 0 &&
+              !verificationReport.isChainIntact && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => navigate('verify-history')}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#FEE2E2] px-3.5 py-2 text-xs font-semibold text-[#B91C1C] cursor-pointer"
+                  >
+                    <AlertCircle className="h-4 w-4" />
+                    <span>Audit Hash Mismatch Detected — Inspect</span>
+                  </button>
+                </div>
               )}
-            </div>
 
-            {db.platformSettings.demonstrationNoticeEnabled && (
-              <DemoDisclosureBanner compact />
-            )}
+            <main className="flex-1 pb-4">{children}</main>
 
-            {/* Main Viewport */}
-            <main className="flex-1 pb-6">{children}</main>
+            <footer className="pt-2 text-[11px] text-[#7A7A7A] flex flex-wrap items-center justify-between gap-2">
+              <span>
+                KuriCircle Demonstration Environment · Simulated coordination
+                records only (not a regulated financial institution).
+              </span>
+              <span>SHA-256 Audit Ledger</span>
+            </footer>
           </div>
         </div>
 

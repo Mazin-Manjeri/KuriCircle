@@ -55,7 +55,7 @@ export const AboutPage: React.FC = () => {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button onClick={() => switchDemoUser('usr-org-01')}>
+        <Button onClick={() => switchDemoUser('usr-mazin-01')}>
           Launch Interactive Demo
         </Button>
         <Button variant="outline" onClick={() => navigate('security')}>
@@ -131,7 +131,7 @@ export const FeaturesPage: React.FC = () => {
         })}
       </div>
 
-      <Button onClick={() => switchDemoUser('usr-org-01')} className="gap-2">
+      <Button onClick={() => switchDemoUser('usr-mazin-01')} className="gap-2">
         <span>Try All Features in Live Demo</span>
         <ArrowRight className="h-4 w-4" />
       </Button>
@@ -196,11 +196,8 @@ export const HowItWorksPage: React.FC = () => {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button onClick={() => switchDemoUser('usr-org-01')}>
-          Open Organizer Demo
-        </Button>
-        <Button variant="outline" onClick={() => switchDemoUser('usr-mem-01')}>
-          Open Member Demo
+        <Button onClick={() => switchDemoUser('usr-mazin-01')}>
+          Open Workspace
         </Button>
         <Button variant="ghost" onClick={() => navigate('landing')}>
           Back to Home
@@ -257,8 +254,8 @@ export const SecurityPage: React.FC = () => {
         </Card>
       </div>
 
-      <Button onClick={() => switchDemoUser('usr-org-01')}>
-        Test Audit Verification in Demo
+      <Button onClick={() => switchDemoUser('usr-mazin-01')}>
+        Test Audit Verification
       </Button>
     </div>
   );

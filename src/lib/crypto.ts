@@ -39,9 +39,9 @@ function canonicalizePayload(payload: AuditHashPayload): string {
  * for any non-secure context. Runs cleanly in static browser environments.
  */
 export async function sha256Hex(message: string): Promise<string> {
-  if (typeof window !== 'undefined' && window.crypto?.subtle) {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto?.subtle) {
     const encoded = new TextEncoder().encode(message);
-    const digest = await window.crypto.subtle.digest('SHA-256', encoded);
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', encoded);
     return Array.from(new Uint8Array(digest))
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
@@ -153,7 +153,7 @@ export async function verifyAuditChain(
     totalEvents: ordered.length,
     validEvents,
     brokenEvents: ordered.length - validEvents,
-    isChainIntact: ordered.length > 0 && validEvents === ordered.length,
+    isChainIntact: validEvents === ordered.length,
     firstBrokenEventId,
     items,
   };

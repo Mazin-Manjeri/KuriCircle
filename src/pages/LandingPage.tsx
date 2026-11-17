@@ -1,48 +1,34 @@
-import React, { useState } from 'react';
-import {
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  FileCheck2,
-  Lock,
-  ShieldCheck,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent } from '@/src/components/ui/card';
 import { DEMO_GROUP_IMAGES } from '@/src/lib/seedData';
 import { useKuri } from '@/src/lib/store';
+import { formatINR, shortHash } from '@/src/lib/utils';
 
 const USE_CASES = [
   {
     title: 'Community Development',
-    example: 'Greenfield Ward Solar & Water Pool',
     detail: 'Track neighbourhood infrastructure pledges with shared visibility across every household.',
   },
   {
     title: 'Education Reserves',
-    example: 'Malabar Scholars Circle',
     detail: 'Coordinate tuition, exam fee, and scholarship pools with clear monthly contribution milestones.',
   },
   {
     title: 'Small Business Capital',
-    example: 'Kochi Artisans Equipment Pool',
     detail: 'Help local makers and shopkeepers track shared tool and workshop savings goals.',
   },
   {
     title: 'Medical Emergencies',
-    example: 'Trusted Family Reserve',
     detail: 'Maintain an auditable emergency coordination ledger accessible to designated family members.',
   },
   {
     title: 'Weddings & Milestones',
-    example: 'Extended Family Goal Circle',
     detail: 'Replace handwritten notebooks with verified digital receipts and transparent progress charts.',
   },
   {
     title: 'Family Savings',
-    example: 'Annual Home Maintenance Fund',
     detail: 'Keep every contributor aligned on dates, pending dues, and goal completion percentages.',
   },
 ];
@@ -50,11 +36,11 @@ const USE_CASES = [
 const FAQS = [
   {
     q: 'Does KuriCircle collect or custody real money?',
-    a: 'No. KuriCircle is an educational and hackathon demonstration prototype. All amounts, transactions, and balances are simulated demonstration records only.',
+    a: 'No. KuriCircle is a community savings coordination and audit platform. It does not custody real deposits or disburse cash payouts.',
   },
   {
     q: 'How is this different from a regulated rotating chit fund?',
-    a: 'KuriCircle coordinates goal-based community savings tracking and transparent recordkeeping. It does not operate rotating prize auctions, collect real deposits, or claim regulatory authorization.',
+    a: 'KuriCircle coordinates goal-based community savings tracking and transparent recordkeeping. It does not operate rotating prize auctions or claim regulatory authorization.',
   },
   {
     q: 'How does the tamper-evident audit ledger work?',
@@ -67,12 +53,45 @@ const FAQS = [
 ];
 
 export const LandingPage: React.FC = () => {
-  const { navigate, switchDemoUser } = useKuri();
+  const { db, verificationReport, navigate, switchDemoUser, currentUser } = useKuri();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [heroImgFailed, setHeroImgFailed] = useState(false);
 
-  const launchInstantDemo = () => {
-    switchDemoUser('usr-org-01');
+  // Live metrics derived directly from the database (never hardcoded mock figures)
+  const totalVerifiedPool = useMemo(
+    () =>
+      db.contributions
+        .filter((c) => c.verificationStatus === 'verified')
+        .reduce((s, c) => s + c.amount, 0),
+    [db.contributions]
+  );
+
+  const activeMembersCount = useMemo(
+    () =>
+      new Set(
+        db.groupMembers
+          .filter((gm) => gm.status === 'active')
+          .map((gm) => gm.userId)
+      ).size,
+    [db.groupMembers]
+  );
+
+  const latestAuditEvent =
+    db.auditEvents.length > 0
+      ? db.auditEvents[db.auditEvents.length - 1]
+      : null;
+
+  const handleExploreClick = () => {
+    if (currentUser) {
+      navigate('dashboard');
+      return;
+    }
+    const starter = db.profiles[0];
+    if (starter) {
+      switchDemoUser(starter.id);
+    } else {
+      navigate('login');
+    }
   };
 
   return (
@@ -81,11 +100,9 @@ export const LandingPage: React.FC = () => {
       <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 lg:pt-16 lg:pb-24">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-stretch">
           <div className="lg:col-span-6 flex flex-col justify-center space-y-6">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#0E5A46]">
-              <span>Traditional Trust. Digital Transparency.</span>
-              <span aria-hidden="true" className="text-[#C8A45A]">·</span>
-              <span className="text-[#7A7A7A]">Simulated Demonstration Prototype</span>
-            </div>
+            <p className="text-xs font-semibold text-[#0E5A46]">
+              Traditional Trust · Digital Transparency
+            </p>
 
             <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#1F1F1F] leading-[1.12] [text-wrap:balance]">
               Your Community. Your Savings. Complete Transparency.
@@ -98,7 +115,7 @@ export const LandingPage: React.FC = () => {
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Button size="lg" onClick={launchInstantDemo} className="gap-2">
+              <Button size="lg" onClick={handleExploreClick} className="gap-2">
                 <span>Explore the Demo</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -114,15 +131,9 @@ export const LandingPage: React.FC = () => {
                 onClick={() => navigate('login')}
                 className="px-3 py-2 text-sm font-medium text-[#0E5A46] hover:underline underline-offset-4 cursor-pointer"
               >
-                Role Login Options
+                Sign In
               </button>
             </div>
-
-            <p className="text-xs text-[#7A7A7A] max-w-lg leading-relaxed">
-              Prototype Notice: KuriCircle demonstrates transparent digital
-              recordkeeping using simulated transactions only. Not an authorized
-              financial institution or operating chit fund.
-            </p>
           </div>
 
           <div className="lg:col-span-6">
@@ -142,19 +153,17 @@ export const LandingPage: React.FC = () => {
                   </span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F1F]/70 via-[#1F1F1F]/15 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F1F]/65 via-[#1F1F1F]/10 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 rounded-2xl bg-white/95 backdrop-blur-sm p-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs text-[#7A7A7A]">
-                      Featured Demo Group · Greenfield Community Savings
-                    </p>
+                    <p className="text-xs text-[#7A7A7A]">Live Ledger Snapshot</p>
                     <p className="font-display text-base font-semibold text-[#1F1F1F] tabular-nums">
-                      ₹40,000 simulated progress of ₹1,00,000 goal
+                      {formatINR(totalVerifiedPool)} verified across {db.groups.length} groups
                     </p>
                   </div>
                   <span className="text-xs font-semibold text-[#0E5A46] tabular-nums">
-                    40% Verified · 10 Members
+                    {activeMembersCount} Active Members
                   </span>
                 </div>
               </div>
@@ -162,42 +171,42 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Claim-to-Proof Metrics Strip directly below hero */}
+        {/* Live Platform Metrics Strip */}
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-[20px] bg-white p-5 shadow-[0_2px_14px_rgba(31,31,31,0.03)]">
-            <p className="text-xs text-[#7A7A7A]">Audit Chain Algorithm</p>
-            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F] font-mono">
-              SHA-256
+            <p className="text-xs text-[#7A7A7A]">Active Savings Groups</p>
+            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F] tabular-nums">
+              {db.groups.length}
+            </p>
+            <p className="mt-1 text-xs text-[#7A7A7A]">
+              Goal-based community pools
+            </p>
+          </div>
+          <div className="rounded-[20px] bg-white p-5 shadow-[0_2px_14px_rgba(31,31,31,0.03)]">
+            <p className="text-xs text-[#7A7A7A]">Verified Contributions</p>
+            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F] tabular-nums">
+              {formatINR(totalVerifiedPool)}
+            </p>
+            <p className="mt-1 text-xs text-[#7A7A7A] tabular-nums">
+              {db.contributions.length} total entries
+            </p>
+          </div>
+          <div className="rounded-[20px] bg-white p-5 shadow-[0_2px_14px_rgba(31,31,31,0.03)]">
+            <p className="text-xs text-[#7A7A7A]">Audit Events Chained</p>
+            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F] tabular-nums">
+              {verificationReport?.totalEvents ?? 0}
             </p>
             <p className="mt-1 text-xs text-[#0E5A46]">
-              Sequential hash linkage per event
-            </p>
-          </div>
-          <div className="rounded-[20px] bg-white p-5 shadow-[0_2px_14px_rgba(31,31,31,0.03)]">
-            <p className="text-xs text-[#7A7A7A]">Access Governance</p>
-            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F]">
-              3 Distinct Roles
-            </p>
-            <p className="mt-1 text-xs text-[#7A7A7A]">
-              Organizer · Member · Platform Admin
-            </p>
-          </div>
-          <div className="rounded-[20px] bg-white p-5 shadow-[0_2px_14px_rgba(31,31,31,0.03)]">
-            <p className="text-xs text-[#7A7A7A]">Demo Pool Progress</p>
-            <p className="mt-1 font-display text-xl font-bold text-[#1F1F1F] tabular-nums">
-              ₹83,000
-            </p>
-            <p className="mt-1 text-xs text-[#7A7A7A]">
-              Across 3 simulated community circles
+              SHA-256 hash verification
             </p>
           </div>
           <div className="rounded-[20px] bg-[#0E5A46] p-5 text-white shadow-[0_2px_14px_rgba(14,90,70,0.18)]">
-            <p className="text-xs text-white/75">Custody & Legal Model</p>
+            <p className="text-xs text-white/75">Access Governance</p>
             <p className="mt-1 font-display text-xl font-bold">
-              Zero Custody MVP
+              Role-Enforced
             </p>
             <p className="mt-1 text-xs text-white/85">
-              Simulated coordination ledger only
+              Organizer · Member · Admin
             </p>
           </div>
         </div>
@@ -218,33 +227,21 @@ export const LandingPage: React.FC = () => {
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             <Card className="bg-[#F8F6F2] shadow-none border border-[#E7E4DC]">
               <CardContent className="p-7 space-y-4">
-                <p className="text-xs font-semibold text-[#9A6B16]">
-                  01. The Traditional Challenge
-                </p>
                 <h3 className="font-display text-xl font-semibold text-[#1F1F1F]">
-                  Paper notebooks and informal chat threads break down at scale
+                  The Traditional Challenge
                 </h3>
                 <ul className="space-y-3 text-sm text-[#555555]">
-                  <li className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#C8A45A] shrink-0" />
-                    <span>
-                      Contributors lack real-time visibility into verified balances and
-                      group goal progress.
-                    </span>
+                  <li>
+                    Contributors lack real-time visibility into verified balances
+                    and group goal progress.
                   </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#C8A45A] shrink-0" />
-                    <span>
-                      Handwritten entries can be overwritten or lost without an audit
-                      trail of who made changes.
-                    </span>
+                  <li>
+                    Handwritten entries can be overwritten or lost without an
+                    audit trail of who made changes.
                   </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#C8A45A] shrink-0" />
-                    <span>
-                      Disputes over dates, missed cycles, or amounts rely on memory
-                      rather than verifiable receipts.
-                    </span>
+                  <li>
+                    Disputes over dates, missed cycles, or amounts rely on
+                    memory rather than verifiable receipts.
                   </li>
                 </ul>
               </CardContent>
@@ -252,33 +249,21 @@ export const LandingPage: React.FC = () => {
 
             <Card className="bg-[#0E5A46] text-white shadow-none">
               <CardContent className="p-7 space-y-4">
-                <p className="text-xs font-semibold text-[#E5C98B]">
-                  02. The KuriCircle Approach
-                </p>
                 <h3 className="font-display text-xl font-semibold text-white">
-                  Structured goal tracking paired with a SHA-256 linked audit log
+                  The KuriCircle Approach
                 </h3>
                 <ul className="space-y-3 text-sm text-white/90">
-                  <li className="flex items-start gap-2.5">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#E5C98B] shrink-0" />
-                    <span>
-                      Every simulated contribution receives a unique Transaction ID,
-                      verification status, and printable receipt.
-                    </span>
+                  <li>
+                    Every recorded contribution receives a unique Transaction ID,
+                    verification status, and downloadable receipt.
                   </li>
-                  <li className="flex items-start gap-2.5">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#E5C98B] shrink-0" />
-                    <span>
-                      Append-only audit records chain each event hash to the previous
-                      hash so tampering is immediately detectable.
-                    </span>
+                  <li>
+                    Append-only audit records chain each SHA-256 event hash to
+                    the previous hash so tampering is immediately detectable.
                   </li>
-                  <li className="flex items-start gap-2.5">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#E5C98B] shrink-0" />
-                    <span>
-                      Built-in dispute resolution and CSV financial exports keep
-                      organizers and members aligned.
-                    </span>
+                  <li>
+                    Built-in dispute resolution and CSV financial exports keep
+                    organizers and members aligned.
                   </li>
                 </ul>
               </CardContent>
@@ -287,11 +272,11 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Three-Step Workflow & Bento Preview */}
+      {/* 3. Three-Step Workflow */}
       <section className="mx-auto max-w-7xl px-6 py-16 lg:py-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="max-w-xl space-y-2">
-            <p className="text-xs font-semibold text-[#0E5A46]">Three-Step Flow</p>
+            <p className="text-xs font-semibold text-[#0E5A46]">Workflow</p>
             <h2 className="font-display text-3xl font-bold tracking-tight text-[#1F1F1F]">
               From group setup to cryptographic verification
             </h2>
@@ -310,7 +295,7 @@ export const LandingPage: React.FC = () => {
             },
             {
               step: '02. Record & Verify',
-              title: 'Log simulated contributions',
+              title: 'Log contributions',
               body: 'Period idempotency prevents duplicate entries. Organizers verify records while members view individual receipts.',
             },
             {
@@ -330,59 +315,13 @@ export const LandingPage: React.FC = () => {
             </Card>
           ))}
         </div>
-
-        {/* Interactive Dashboard Preview Card (Inspired by Reference Layout) */}
-        <div className="mt-14 rounded-[28px] bg-[#EAE8E2] p-5 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div>
-              <p className="text-xs font-semibold text-[#0E5A46]">
-                Workspace Preview
-              </p>
-              <h3 className="font-display text-2xl font-bold text-[#1F1F1F]">
-                Designed for clarity across non-technical members and organizers
-              </h3>
-            </div>
-            <Button onClick={launchInstantDemo}>Open Live Interactive Demo</Button>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-12">
-            <div className="md:col-span-3 rounded-[20px] bg-white p-5">
-              <p className="text-xs text-[#7A7A7A]">Greenfield Simulated Pool</p>
-              <p className="mt-2 font-display text-2xl font-bold text-[#1F1F1F] tabular-nums">
-                ₹40,000
-              </p>
-              <p className="mt-1 text-xs text-[#0E5A46]">40% of ₹1,00,000 target</p>
-            </div>
-            <div className="md:col-span-3 rounded-[20px] bg-white p-5">
-              <p className="text-xs text-[#7A7A7A]">Active Participants</p>
-              <p className="mt-2 font-display text-2xl font-bold text-[#1F1F1F] tabular-nums">
-                10 Members
-              </p>
-              <p className="mt-1 text-xs text-[#7A7A7A]">₹1,000 monthly cycle</p>
-            </div>
-            <div className="md:col-span-3 rounded-[20px] bg-white p-5">
-              <p className="text-xs text-[#7A7A7A]">Audit Events Linked</p>
-              <p className="mt-2 font-display text-2xl font-bold text-[#1F1F1F] tabular-nums">
-                17 Records
-              </p>
-              <p className="mt-1 text-xs text-[#0E5A46]">SHA-256 Chain Verified</p>
-            </div>
-            <div className="md:col-span-3 rounded-[20px] bg-gradient-to-br from-[#527C6E] to-[#0E5A46] p-5 text-white">
-              <p className="text-xs text-white/80">Completion Rate</p>
-              <p className="mt-2 font-display text-2xl font-bold tabular-nums">
-                100%
-              </p>
-              <p className="mt-1 text-xs text-white/85">Cycle 4 verified on time</p>
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* 4. Transparent Ledger Explainer & Community Use Cases */}
+      {/* 4. Cryptographic Ledger & Use Cases */}
       <section className="bg-white py-16 lg:py-20 border-y border-[#ECEAE3]">
         <div className="mx-auto max-w-7xl px-6 space-y-16">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-            <div className="lg:col-span-5 space-y-4">
+            <div className="lg:col-span-6 space-y-4">
               <p className="text-xs font-semibold text-[#0E5A46]">
                 Cryptographically Linked Audit Ledger
               </p>
@@ -390,56 +329,47 @@ export const LandingPage: React.FC = () => {
                 Every transaction anchors to the record before it
               </h2>
               <p className="text-sm leading-relaxed text-[#555555]">
-                We do not make false claims about decentralized blockchains.
-                Instead, KuriCircle implements a practical, append-only
-                cryptographic audit log using SHA-256 hashing so unauthorized edits
-                to historical records are immediately exposed.
+                KuriCircle implements an append-only cryptographic audit log
+                using Web Crypto SHA-256 hashing so unauthorized edits to
+                historical records are immediately exposed during verification.
               </p>
               <Button variant="outline" onClick={() => navigate('security')}>
                 Inspect Verification Architecture
               </Button>
             </div>
 
-            <div className="lg:col-span-7 grid gap-4 sm:grid-cols-3">
-              {[
-                {
-                  label: '01. Previous Hash',
-                  icon: Lock,
-                  code: '7a4c9f10...e8b12d',
-                  desc: 'References the cryptographic fingerprint of the preceding audit event.',
-                },
-                {
-                  label: '02. Event Payload',
-                  icon: FileCheck2,
-                  code: 'SIM-GRN-1035 · ₹1,000',
-                  desc: 'Canonical record of transaction ID, actor, amount, and timestamp.',
-                },
-                {
-                  label: '03. Current Hash',
-                  icon: ShieldCheck,
-                  code: 'd3918a04...5f2c90',
-                  desc: 'Deterministic SHA-256 digest verified anytime in the browser.',
-                },
-              ].map((block) => {
-                const Icon = block.icon;
-                return (
-                  <div
-                    key={block.label}
-                    className="rounded-[20px] bg-[#F8F6F2] p-5 border border-[#E7E4DC] space-y-3"
-                  >
-                    <Icon className="h-5 w-5 text-[#0E5A46]" />
-                    <p className="font-display text-sm font-semibold text-[#1F1F1F]">
-                      {block.label}
-                    </p>
-                    <p className="font-mono text-xs text-[#0E5A46] bg-white rounded-lg px-2.5 py-1.5 border border-[#ECEAE3] truncate">
-                      {block.code}
-                    </p>
-                    <p className="text-xs leading-relaxed text-[#7A7A7A]">
-                      {block.desc}
-                    </p>
+            <div className="lg:col-span-6 rounded-[22px] bg-[#F8F6F2] p-6 border border-[#E7E4DC] space-y-3">
+              <p className="text-xs font-semibold text-[#1F1F1F]">
+                Latest Live Ledger Anchor
+              </p>
+              {latestAuditEvent ? (
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-[#7A7A7A]">Sequence</span>
+                    <span className="font-mono font-semibold">
+                      #{latestAuditEvent.sequenceNumber} · {latestAuditEvent.eventType}
+                    </span>
                   </div>
-                );
-              })}
+                  <div className="flex justify-between">
+                    <span className="text-[#7A7A7A]">Previous Hash</span>
+                    <span className="font-mono text-[#555555]">
+                      {shortHash(latestAuditEvent.previousEventHash)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#7A7A7A]">Current Hash</span>
+                    <span className="font-mono font-semibold text-[#0E5A46]">
+                      {shortHash(latestAuditEvent.currentEventHash)}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-[#7A7A7A] leading-relaxed">
+                  No audit events have been recorded yet. Create a savings group
+                  or record a contribution inside the workspace to generate the
+                  genesis SHA-256 anchor in real time.
+                </p>
+              )}
             </div>
           </div>
 
@@ -459,7 +389,6 @@ export const LandingPage: React.FC = () => {
                   key={u.title}
                   className="rounded-[20px] bg-[#F8F6F2] p-6 border border-[#ECEAE3] space-y-2"
                 >
-                  <p className="text-xs font-medium text-[#0E5A46]">{u.example}</p>
                   <h3 className="font-display text-lg font-semibold text-[#1F1F1F]">
                     {u.title}
                   </h3>
@@ -473,78 +402,45 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Security, FAQ & Final CTA */}
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-5 space-y-5">
-            <p className="text-xs font-semibold text-[#0E5A46]">
-              Security & Regulatory Clarity
-            </p>
-            <h2 className="font-display text-3xl font-bold tracking-tight text-[#1F1F1F]">
-              Built with database isolation and honest scope boundaries
-            </h2>
-            <div className="space-y-3 text-sm text-[#555555]">
-              <div className="flex items-start gap-2.5">
-                <Users className="h-4 w-4 text-[#0E5A46] mt-0.5 shrink-0" />
-                <span>
-                  Row Level Security policies isolate group data so unauthorized
-                  users cannot read private circles.
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <TrendingUp className="h-4 w-4 text-[#0E5A46] mt-0.5 shrink-0" />
-                <span>
-                  Authoritative totals are computed strictly from verified ledger
-                  records, never arbitrary client balances.
-                </span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <ShieldCheck className="h-4 w-4 text-[#0E5A46] mt-0.5 shrink-0" />
-                <span>
-                  No regulatory claims or guaranteed financial returns. Designed
-                  for hackathon demonstration and future compliance review.
-                </span>
-              </div>
-            </div>
-            <div className="pt-2">
-              <Button onClick={() => navigate('register')}>
-                Create Demo Account
-              </Button>
-            </div>
-          </div>
+      {/* 5. FAQ */}
+      <section className="mx-auto max-w-4xl px-6 py-16 lg:py-20 space-y-6">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-[#0E5A46]">
+            Frequently Asked Questions
+          </p>
+          <h2 className="font-display text-3xl font-bold tracking-tight text-[#1F1F1F]">
+            Scope, verification, and governance clarity
+          </h2>
+        </div>
 
-          <div className="lg:col-span-7 space-y-3">
-            <p className="text-xs font-semibold text-[#0E5A46] mb-2">
-              Frequently Asked Questions
-            </p>
-            {FAQS.map((item, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div
-                  key={item.q}
-                  className="rounded-[20px] bg-white border border-[#ECEAE3] overflow-hidden"
+        <div className="space-y-3">
+          {FAQS.map((item, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={item.q}
+                className="rounded-[20px] bg-white border border-[#ECEAE3] overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="flex w-full items-center justify-between gap-4 p-5 text-left font-display text-sm sm:text-base font-semibold text-[#1F1F1F] cursor-pointer"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="flex w-full items-center justify-between gap-4 p-5 text-left font-display text-sm sm:text-base font-semibold text-[#1F1F1F] cursor-pointer"
-                  >
-                    <span>{item.q}</span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-[#7A7A7A] shrink-0 transition-transform ${
-                        isOpen ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 text-sm leading-relaxed text-[#555555]">
-                      {item.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  <span>{item.q}</span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-[#7A7A7A] shrink-0 transition-transform ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 text-sm leading-relaxed text-[#555555]">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>
